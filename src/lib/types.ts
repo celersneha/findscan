@@ -84,16 +84,17 @@ export const DEFAULT_BOLLINGER_SETTINGS: BollingerBandsSettings = {
   },
   upperBand: {
     visible: true,
-    color: "#2196F3",
+    color: "#4CAF50",
     lineWidth: 1,
     lineStyle: "solid",
   },
   lowerBand: {
     visible: true,
-    color: "#2196F3",
+    color: "#F44336",
     lineWidth: 1,
     lineStyle: "solid",
   },
+
   backgroundFill: {
     visible: true,
     opacity: 0.1,
