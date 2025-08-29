@@ -75,48 +75,38 @@ export default function Chart({ width = 800, height = 600 }: ChartProps) {
       klineChart.current = null;
     }
 
-    // Register custom Bollinger Bands indicator
+    // Register custom Bollinger Bands indicator with unique name to ensure updates
+    const indicatorName = `BOLL_${Date.now()}_L${bollingerSettings.length}_S${
+      bollingerSettings.stdDevMultiplier
+    }_O${bollingerSettings.offset}`;
     try {
       registerIndicator({
-        name: "BOLL",
+        name: indicatorName,
         figures: [
           { key: "up", title: "UP", type: "line" },
           { key: "mid", title: "MID", type: "line" },
           { key: "dn", title: "DN", type: "line" },
         ],
         calc: (dataList: any[], indicator: any) => {
-          const params = indicator.calcParams || [20, 2, "close"];
-          const length = params[0] || 20;
-          const stdDevMultiplier = params[1] || 2;
-          const source = params[2] || "close";
+          // Use pre-calculated Bollinger data instead of recalculating
           const result = [];
 
           for (let i = 0; i < dataList.length; i++) {
-            if (i < length - 1) {
+            if (
+              i < bollingerData.length &&
+              bollingerData[i] &&
+              bollingerData[i].basis !== null &&
+              bollingerData[i].upper !== null &&
+              bollingerData[i].lower !== null
+            ) {
+              result.push({
+                up: bollingerData[i].upper,
+                mid: bollingerData[i].basis,
+                dn: bollingerData[i].lower,
+              });
+            } else {
               result.push({});
-              continue;
             }
-
-            // Calculate SMA (basis)
-            let sum = 0;
-            for (let j = i - length + 1; j <= i; j++) {
-              sum += dataList[j][source];
-            }
-            const basis = sum / length;
-
-            // Calculate standard deviation
-            let squaredDiffSum = 0;
-            for (let j = i - length + 1; j <= i; j++) {
-              const diff = dataList[j][source] - basis;
-              squaredDiffSum += diff * diff;
-            }
-            const stdDev = Math.sqrt(squaredDiffSum / (length - 1)); // Sample std dev
-
-            result.push({
-              up: basis + stdDevMultiplier * stdDev,
-              mid: basis,
-              dn: basis - stdDevMultiplier * stdDev,
-            });
           }
 
           return result;
@@ -124,6 +114,7 @@ export default function Chart({ width = 800, height = 600 }: ChartProps) {
       });
     } catch (e) {
       // Indicator might already be registered
+      console.log("Bollinger indicator already registered or error:", e);
     }
 
     // Create fresh chart instance
@@ -146,12 +137,13 @@ export default function Chart({ width = 800, height = 600 }: ChartProps) {
 
     // Add Bollinger Bands indicator with current settings
     const indicatorId = chart.createIndicator({
-      name: "BOLL",
+      name: indicatorName,
       paneId: "candle_pane",
       calcParams: [
         bollingerSettings.length,
         bollingerSettings.stdDevMultiplier,
         bollingerSettings.source,
+        bollingerSettings.offset, // Add offset parameter
       ],
       styles: {
         lines: [
@@ -204,13 +196,22 @@ export default function Chart({ width = 800, height = 600 }: ChartProps) {
       }
       klineChart.current = null;
     };
-  }, [ohlcvData, bollingerSettings]); // Now depends on both data AND settings
+  }, [ohlcvData, bollingerSettings, bollingerData]); // Now depends on data, settings AND calculated bollinger data
 
   const handleSettingsChange = useCallback(
     (newSettings: BollingerBandsSettings) => {
-      setBollingerSettings(newSettings);
+      // Force a complete new object to ensure React detects the change
+      setBollingerSettings({
+        ...DEFAULT_BOLLINGER_SETTINGS,
+        ...newSettings,
+        // Ensure nested objects are also new references
+        basicBand: { ...newSettings.basicBand },
+        upperBand: { ...newSettings.upperBand },
+        lowerBand: { ...newSettings.lowerBand },
+        backgroundFill: { ...newSettings.backgroundFill },
+      });
     },
-    []
+    [bollingerSettings]
   );
 
   const handleSettingsClose = useCallback(() => {
@@ -252,6 +253,7 @@ export default function Chart({ width = 800, height = 600 }: ChartProps) {
       {/* Chart Container */}
       <div className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
         <div
+          key={`chart-${bollingerSettings.length}-${bollingerSettings.stdDevMultiplier}-${bollingerSettings.source}-${bollingerSettings.offset}`}
           ref={chartRef}
           style={{ width, height }}
           className="bg-white dark:bg-gray-900"
@@ -267,7 +269,8 @@ export default function Chart({ width = 800, height = 600 }: ChartProps) {
           <div className="text-sm text-gray-600 dark:text-gray-400">
             Length: {bollingerSettings.length} | StdDev:{" "}
             {bollingerSettings.stdDevMultiplier} | Source:{" "}
-            {bollingerSettings.source.toUpperCase()}
+            {bollingerSettings.source.toUpperCase()} | Offset:{" "}
+            {bollingerSettings.offset}
           </div>
         </div>
 
@@ -355,7 +358,7 @@ export default function Chart({ width = 800, height = 600 }: ChartProps) {
           </div>
           <div className="font-semibold text-gray-900 dark:text-white">
             $
-            {bollingerData[bollingerData.length - 1]?.upper.toLocaleString() ||
+            {bollingerData[bollingerData.length - 1]?.upper?.toLocaleString() ||
               "N/A"}
           </div>
         </div>
@@ -379,33 +382,41 @@ export default function Chart({ width = 800, height = 600 }: ChartProps) {
                 </tr>
               </thead>
               <tbody>
-                {bollingerData.slice(-5).map((data, index) => {
-                  const ohlcPoint = ohlcvData.find(
-                    (d) => d.timestamp === data.timestamp
-                  );
-                  return (
-                    <tr
-                      key={data.timestamp}
-                      className="text-gray-900 dark:text-white"
-                    >
-                      <td className="py-1">
-                        {new Date(data.timestamp).toLocaleDateString()}
-                      </td>
-                      <td className="text-right py-1">
-                        ${ohlcPoint?.close.toFixed(2) || "N/A"}
-                      </td>
-                      <td className="text-right py-1">
-                        ${data.upper.toFixed(2)}
-                      </td>
-                      <td className="text-right py-1">
-                        ${data.basis.toFixed(2)}
-                      </td>
-                      <td className="text-right py-1">
-                        ${data.lower.toFixed(2)}
-                      </td>
-                    </tr>
-                  );
-                })}
+                {bollingerData
+                  .filter(
+                    (data) =>
+                      data.basis !== null &&
+                      data.upper !== null &&
+                      data.lower !== null
+                  )
+                  .slice(-5)
+                  .map((data, index) => {
+                    const ohlcPoint = ohlcvData.find(
+                      (d) => d.timestamp === data.timestamp
+                    );
+                    return (
+                      <tr
+                        key={data.timestamp}
+                        className="text-gray-900 dark:text-white"
+                      >
+                        <td className="py-1">
+                          {new Date(data.timestamp).toLocaleDateString()}
+                        </td>
+                        <td className="text-right py-1">
+                          ${ohlcPoint?.close.toFixed(2) || "N/A"}
+                        </td>
+                        <td className="text-right py-1">
+                          ${data.upper?.toFixed(2) || "N/A"}
+                        </td>
+                        <td className="text-right py-1">
+                          ${data.basis?.toFixed(2) || "N/A"}
+                        </td>
+                        <td className="text-right py-1">
+                          ${data.lower?.toFixed(2) || "N/A"}
+                        </td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
           </div>
