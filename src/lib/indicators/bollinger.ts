@@ -45,24 +45,18 @@ export function calculateBollingerBands(
   // Compute Bollinger Bands
   const bollingerResults = computeBollingerBands(input);
 
-  // Convert to BollingerBandsData format
+  // Convert to BollingerBandsData format - KEEP ALL DATA POINTS
   const result: BollingerBandsData[] = [];
   for (let i = 0; i < ohlcvData.length; i++) {
     const bollingerResult = bollingerResults[i];
 
-    // Only include data points where all values are available
-    if (
-      bollingerResult.basis !== null &&
-      bollingerResult.upper !== null &&
-      bollingerResult.lower !== null
-    ) {
-      result.push({
-        timestamp: ohlcvData[i].timestamp,
-        basis: bollingerResult.basis,
-        upper: bollingerResult.upper,
-        lower: bollingerResult.lower,
-      });
-    }
+    // Create data point for every index, even if values are null
+    result.push({
+      timestamp: ohlcvData[i].timestamp,
+      basis: bollingerResult.basis,
+      upper: bollingerResult.upper,
+      lower: bollingerResult.lower,
+    });
   }
 
   return result;
