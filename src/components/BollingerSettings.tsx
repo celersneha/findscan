@@ -1,12 +1,30 @@
-"use client";
-
 import React, { useState } from "react";
 import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Slider } from "@/components/ui/slider";
+import {
   BollingerBandsSettings,
-  MAType,
-  SourceType,
-  LineStyle,
   DEFAULT_BOLLINGER_SETTINGS,
+  SourceType,
+  MAType,
+  LineStyle,
 } from "../lib/types";
 
 interface BollingerSettingsProps {
@@ -15,7 +33,7 @@ interface BollingerSettingsProps {
   onClose: () => void;
 }
 
-export default function BollingerSettings({
+function BollingerSettings({
   settings,
   onChange,
   onClose,
@@ -50,437 +68,379 @@ export default function BollingerSettings({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-96 max-h-[90vh] min-h-[60vh] overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Bollinger Bands Settings
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xl"
+    <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-md max-h-[90vh] flex flex-col flex-1 overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Bollinger Bands Settings</DialogTitle>
+        </DialogHeader>
+
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => setActiveTab(value as "inputs" | "style")}
+          className="flex-1 flex flex-col"
+        >
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="inputs">Inputs</TabsTrigger>
+            <TabsTrigger value="style">Style</TabsTrigger>
+          </TabsList>
+
+          <TabsContent
+            value="inputs"
+            className="flex-1 overflow-y-auto p-4 space-y-4"
           >
-            ×
-          </button>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex border-b border-gray-200 dark:border-gray-700">
-          <button
-            onClick={() => setActiveTab("inputs")}
-            className={`flex-1 py-3 px-4 text-sm font-medium ${
-              activeTab === "inputs"
-                ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400"
-                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-            }`}
-          >
-            Inputs
-          </button>
-          <button
-            onClick={() => setActiveTab("style")}
-            className={`flex-1 py-3 px-4 text-sm font-medium ${
-              activeTab === "style"
-                ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400"
-                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-            }`}
-          >
-            Style
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="p-4 flex-1 overflow-y-auto min-h-0">
-          {activeTab === "inputs" && (
-            <div className="space-y-4">
-              {/* Length */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Length
-                </label>
-                <input
-                  type="number"
-                  value={settings.length}
-                  onChange={(e) =>
-                    updateSettings({ length: parseInt(e.target.value) || 20 })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
-                           bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                           focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  min="1"
-                  max="200"
-                />
-              </div>
-
-              {/* Basic MA Type */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Basic MA Type
-                </label>
-                <select
-                  value={settings.basicMAType}
-                  onChange={(e) =>
-                    updateSettings({ basicMAType: e.target.value as MAType })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
-                           bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                           focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="SMA">SMA</option>
-                </select>
-              </div>
-
-              {/* Source */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Source
-                </label>
-                <select
-                  value={settings.source}
-                  onChange={(e) =>
-                    updateSettings({ source: e.target.value as SourceType })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
-                           bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                           focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="close">Close</option>
-                  <option value="open">Open</option>
-                  <option value="high">High</option>
-                  <option value="low">Low</option>
-                </select>
-              </div>
-
-              {/* StdDev Multiplier */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  StdDev (multiplier)
-                </label>
-                <input
-                  type="number"
-                  value={settings.stdDevMultiplier}
-                  onChange={(e) =>
-                    updateSettings({
-                      stdDevMultiplier: parseFloat(e.target.value) || 2,
-                    })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
-                           bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                           focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  min="0.1"
-                  max="5"
-                  step="0.1"
-                />
-              </div>
-
-              {/* Offset */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Offset
-                </label>
-                <input
-                  type="number"
-                  value={settings.offset}
-                  onChange={(e) =>
-                    updateSettings({ offset: parseInt(e.target.value) || 0 })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
-                           bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                           focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  min="-50"
-                  max="50"
-                />
-              </div>
+            <div>
+              <Label htmlFor="length" className="text-sm font-medium mb-1">
+                Length
+              </Label>
+              <Input
+                id="length"
+                type="number"
+                value={settings.length}
+                onChange={(e) =>
+                  updateSettings({ length: parseInt(e.target.value) || 20 })
+                }
+                min="1"
+                max="200"
+              />
             </div>
-          )}
 
-          {activeTab === "style" && (
-            <div className="space-y-6">
-              {/* Basic Band */}
-              <div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
-                  Basic (Middle Band)
-                </h3>
-                <div className="space-y-3 pl-4">
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      checked={settings.basicBand.visible}
-                      onChange={(e) =>
-                        updateBandSettings("basicBand", {
-                          visible: e.target.checked,
-                        })
-                      }
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      Visible
-                    </span>
-                  </div>
+            <div>
+              <Label htmlFor="basicMAType" className="text-sm font-medium mb-1">
+                Basic MA Type
+              </Label>
+              <Select
+                value={settings.basicMAType}
+                onValueChange={(value) =>
+                  updateSettings({ basicMAType: value as any })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="SMA">SMA</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="color"
-                      value={settings.basicBand.color}
-                      onChange={(e) =>
-                        updateBandSettings("basicBand", {
-                          color: e.target.value,
-                        })
-                      }
-                      className="w-8 h-8 rounded border border-gray-300"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      Color
-                    </span>
-                  </div>
+            <div>
+              <Label htmlFor="source" className="text-sm font-medium mb-1">
+                Source
+              </Label>
+              <Select
+                value={settings.source}
+                onValueChange={(value) =>
+                  updateSettings({ source: value as SourceType })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="close">Close</SelectItem>
+                  <SelectItem value="open">Open</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="low">Low</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="range"
-                      min="1"
-                      max="5"
-                      value={settings.basicBand.lineWidth}
-                      onChange={(e) =>
-                        updateBandSettings("basicBand", {
-                          lineWidth: parseInt(e.target.value),
-                        })
-                      }
-                      className="flex-1"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300 w-12">
-                      {settings.basicBand.lineWidth}px
-                    </span>
-                  </div>
+            <div>
+              <Label htmlFor="stdDev" className="text-sm font-medium mb-1">
+                StdDev (multiplier)
+              </Label>
+              <Input
+                id="stdDev"
+                type="number"
+                value={settings.stdDevMultiplier}
+                onChange={(e) =>
+                  updateSettings({
+                    stdDevMultiplier: parseFloat(e.target.value) || 2,
+                  })
+                }
+                step="0.1"
+                min="0.1"
+                max="5"
+              />
+            </div>
 
-                  <select
-                    value={settings.basicBand.lineStyle}
+            <div>
+              <Label htmlFor="offset" className="text-sm font-medium mb-1">
+                Offset
+              </Label>
+              <Input
+                id="offset"
+                type="number"
+                value={settings.offset}
+                onChange={(e) =>
+                  updateSettings({ offset: parseInt(e.target.value) || 0 })
+                }
+                min="-50"
+                max="50"
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent
+            value="style"
+            className="flex-1 overflow-y-auto p-4 space-y-4"
+          >
+            <div>
+              <h3 className="text-sm font-medium mb-3">Basic (Middle Band)</h3>
+              <div className="space-y-3 pl-4">
+                <div className="flex items-center space-x-3">
+                  <Checkbox
+                    id="basicBand-visible"
+                    checked={settings.basicBand.visible}
+                    onCheckedChange={(checked) =>
+                      updateBandSettings("basicBand", {
+                        visible: checked === true,
+                      })
+                    }
+                  />
+                  <Label htmlFor="basicBand-visible" className="text-sm">
+                    Visible
+                  </Label>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="color"
+                    value={settings.basicBand.color}
                     onChange={(e) =>
                       updateBandSettings("basicBand", {
-                        lineStyle: e.target.value as LineStyle,
+                        color: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
-                             bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
-                  >
-                    <option value="solid">Solid</option>
-                    <option value="dashed">Dashed</option>
-                  </select>
+                    className="w-8 h-8 rounded border border-gray-300"
+                  />
+                  <Label className="text-sm">Color</Label>
                 </div>
+
+                <div className="flex items-center space-x-3">
+                  <Slider
+                    value={[settings.basicBand.lineWidth]}
+                    onValueChange={(value) =>
+                      updateBandSettings("basicBand", {
+                        lineWidth: value[0],
+                      })
+                    }
+                    min={1}
+                    max={5}
+                    step={1}
+                    className="flex-1"
+                  />
+                  <span className="text-sm w-12">
+                    {settings.basicBand.lineWidth}px
+                  </span>
+                </div>
+
+                <Select
+                  value={settings.basicBand.lineStyle}
+                  onValueChange={(value) =>
+                    updateBandSettings("basicBand", {
+                      lineStyle: value as any,
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="solid">Solid</SelectItem>
+                    <SelectItem value="dashed">Dashed</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
+            </div>
 
-              {/* Upper Band */}
-              <div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
-                  Upper Band
-                </h3>
-                <div className="space-y-3 pl-4">
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      checked={settings.upperBand.visible}
-                      onChange={(e) =>
-                        updateBandSettings("upperBand", {
-                          visible: e.target.checked,
-                        })
-                      }
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      Visible
-                    </span>
-                  </div>
+            <div>
+              <h3 className="text-sm font-medium mb-3">Upper Band</h3>
+              <div className="space-y-3 pl-4">
+                <div className="flex items-center space-x-3">
+                  <Checkbox
+                    id="upperBand-visible"
+                    checked={settings.upperBand.visible}
+                    onCheckedChange={(checked) =>
+                      updateBandSettings("upperBand", {
+                        visible: checked === true,
+                      })
+                    }
+                  />
+                  <Label htmlFor="upperBand-visible" className="text-sm">
+                    Visible
+                  </Label>
+                </div>
 
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="color"
-                      value={settings.upperBand.color}
-                      onChange={(e) =>
-                        updateBandSettings("upperBand", {
-                          color: e.target.value,
-                        })
-                      }
-                      className="w-8 h-8 rounded border border-gray-300"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      Color
-                    </span>
-                  </div>
-
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="range"
-                      min="1"
-                      max="5"
-                      value={settings.upperBand.lineWidth}
-                      onChange={(e) =>
-                        updateBandSettings("upperBand", {
-                          lineWidth: parseInt(e.target.value),
-                        })
-                      }
-                      className="flex-1"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300 w-12">
-                      {settings.upperBand.lineWidth}px
-                    </span>
-                  </div>
-
-                  <select
-                    value={settings.upperBand.lineStyle}
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="color"
+                    value={settings.upperBand.color}
                     onChange={(e) =>
                       updateBandSettings("upperBand", {
-                        lineStyle: e.target.value as LineStyle,
+                        color: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
-                             bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
-                  >
-                    <option value="solid">Solid</option>
-                    <option value="dashed">Dashed</option>
-                  </select>
+                    className="w-8 h-8 rounded border border-gray-300"
+                  />
+                  <Label className="text-sm">Color</Label>
                 </div>
+
+                <div className="flex items-center space-x-3">
+                  <Slider
+                    value={[settings.upperBand.lineWidth]}
+                    onValueChange={(value) =>
+                      updateBandSettings("upperBand", {
+                        lineWidth: value[0],
+                      })
+                    }
+                    min={1}
+                    max={5}
+                    step={1}
+                    className="flex-1"
+                  />
+                  <span className="text-sm w-12">
+                    {settings.upperBand.lineWidth}px
+                  </span>
+                </div>
+
+                <Select
+                  value={settings.upperBand.lineStyle}
+                  onValueChange={(value) =>
+                    updateBandSettings("upperBand", {
+                      lineStyle: value as any,
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="solid">Solid</SelectItem>
+                    <SelectItem value="dashed">Dashed</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
+            </div>
 
-              {/* Lower Band */}
-              <div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
-                  Lower Band
-                </h3>
-                <div className="space-y-3 pl-4">
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      checked={settings.lowerBand.visible}
-                      onChange={(e) =>
-                        updateBandSettings("lowerBand", {
-                          visible: e.target.checked,
-                        })
-                      }
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      Visible
-                    </span>
-                  </div>
+            <div>
+              <h3 className="text-sm font-medium mb-3">Lower Band</h3>
+              <div className="space-y-3 pl-4">
+                <div className="flex items-center space-x-3">
+                  <Checkbox
+                    id="lowerBand-visible"
+                    checked={settings.lowerBand.visible}
+                    onCheckedChange={(checked) =>
+                      updateBandSettings("lowerBand", {
+                        visible: checked === true,
+                      })
+                    }
+                  />
+                  <Label htmlFor="lowerBand-visible" className="text-sm">
+                    Visible
+                  </Label>
+                </div>
 
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="color"
-                      value={settings.lowerBand.color}
-                      onChange={(e) =>
-                        updateBandSettings("lowerBand", {
-                          color: e.target.value,
-                        })
-                      }
-                      className="w-8 h-8 rounded border border-gray-300"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      Color
-                    </span>
-                  </div>
-
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="range"
-                      min="1"
-                      max="5"
-                      value={settings.lowerBand.lineWidth}
-                      onChange={(e) =>
-                        updateBandSettings("lowerBand", {
-                          lineWidth: parseInt(e.target.value),
-                        })
-                      }
-                      className="flex-1"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300 w-12">
-                      {settings.lowerBand.lineWidth}px
-                    </span>
-                  </div>
-
-                  <select
-                    value={settings.lowerBand.lineStyle}
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="color"
+                    value={settings.lowerBand.color}
                     onChange={(e) =>
                       updateBandSettings("lowerBand", {
-                        lineStyle: e.target.value as LineStyle,
+                        color: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
-                             bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
-                  >
-                    <option value="solid">Solid</option>
-                    <option value="dashed">Dashed</option>
-                  </select>
+                    className="w-8 h-8 rounded border border-gray-300"
+                  />
+                  <Label className="text-sm">Color</Label>
                 </div>
+
+                <div className="flex items-center space-x-3">
+                  <Slider
+                    value={[settings.lowerBand.lineWidth]}
+                    onValueChange={(value) =>
+                      updateBandSettings("lowerBand", {
+                        lineWidth: value[0],
+                      })
+                    }
+                    min={1}
+                    max={5}
+                    step={1}
+                    className="flex-1"
+                  />
+                  <span className="text-sm w-12">
+                    {settings.lowerBand.lineWidth}px
+                  </span>
+                </div>
+
+                <Select
+                  value={settings.lowerBand.lineStyle}
+                  onValueChange={(value) =>
+                    updateBandSettings("lowerBand", {
+                      lineStyle: value as any,
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="solid">Solid</SelectItem>
+                    <SelectItem value="dashed">Dashed</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
+            </div>
 
-              {/* Background Fill */}
-              <div>
-                <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-3">
-                  Background Fill
-                </h3>
-                <div className="space-y-3 pl-4">
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="checkbox"
-                      checked={settings.backgroundFill.visible}
-                      onChange={(e) =>
-                        updateBackgroundFill({ visible: e.target.checked })
-                      }
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      Visible
-                    </span>
-                  </div>
+            <div>
+              <h3 className="text-sm font-medium mb-3">Background Fill</h3>
+              <div className="space-y-3 pl-4">
+                <div className="flex items-center space-x-3">
+                  <Checkbox
+                    id="backgroundFill-visible"
+                    checked={settings.backgroundFill.visible}
+                    onCheckedChange={(checked) =>
+                      updateBackgroundFill({
+                        visible: checked === true,
+                      })
+                    }
+                  />
+                  <Label htmlFor="backgroundFill-visible" className="text-sm">
+                    Visible
+                  </Label>
+                </div>
 
-                  <div className="flex items-center space-x-3">
-                    <input
-                      type="range"
-                      min="0"
-                      max="1"
-                      step="0.1"
-                      value={settings.backgroundFill.opacity}
-                      onChange={(e) =>
-                        updateBackgroundFill({
-                          opacity: parseFloat(e.target.value),
-                        })
-                      }
-                      className="flex-1"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300 w-12">
-                      {Math.round(settings.backgroundFill.opacity * 100)}%
-                    </span>
-                  </div>
+                <div className="flex items-center space-x-3">
+                  <Slider
+                    value={[settings.backgroundFill.opacity]}
+                    onValueChange={(value) =>
+                      updateBackgroundFill({
+                        opacity: value[0],
+                      })
+                    }
+                    min={0}
+                    max={1}
+                    step={0.1}
+                    className="flex-1"
+                  />
+                  <span className="text-sm w-12">
+                    {Math.round(settings.backgroundFill.opacity * 100)}%
+                  </span>
                 </div>
               </div>
             </div>
-          )}
-        </div>
+          </TabsContent>
+        </Tabs>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between p-4 border-t border-gray-200 dark:border-gray-700">
-          <button
-            onClick={resetToDefaults}
-            className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-          >
+        <DialogFooter>
+          <Button variant="outline" onClick={resetToDefaults}>
             Reset to Defaults
-          </button>
-          <div className="flex space-x-3">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={onClose}
-              className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 
-                       focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            >
-              Apply
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+          </Button>
+          <Button onClick={onClose}>Done</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
+
+export default BollingerSettings;
