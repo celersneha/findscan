@@ -54,9 +54,9 @@ export interface BollingerBandsSettings {
 // Bollinger Bands Data Point
 export interface BollingerBandsData {
   timestamp: number;
-  basis: number;
-  upper: number;
-  lower: number;
+  basis: number | null;
+  upper: number | null;
+  lower: number | null;
 }
 
 // Chart Data Point for KLineChart
