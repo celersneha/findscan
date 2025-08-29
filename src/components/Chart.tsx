@@ -78,7 +78,9 @@ export default function Chart({ width = 800, height = 600 }: ChartProps) {
     // Register custom Bollinger Bands indicator with unique name to ensure updates
     const indicatorName = `BOLL_${Date.now()}_L${bollingerSettings.length}_S${
       bollingerSettings.stdDevMultiplier
-    }_O${bollingerSettings.offset}`;
+    }_O${
+      bollingerSettings.offset
+    }_SRC${bollingerSettings.source.toUpperCase()}`;
     try {
       registerIndicator({
         name: indicatorName,
