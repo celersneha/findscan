@@ -34,7 +34,7 @@ export default function Chart({ width = 800, height = 600 }: ChartProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Load OHLCV data
+  // Load data
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -57,7 +57,7 @@ export default function Chart({ width = 800, height = 600 }: ChartProps) {
     loadData();
   }, []);
 
-  // Calculate Bollinger Bands when data or settings change
+  // Calculate Bollinger Bands
   useEffect(() => {
     if (ohlcvData.length > 0) {
       const bands = calculateBollingerBands(ohlcvData, bollingerSettings);
@@ -65,7 +65,7 @@ export default function Chart({ width = 800, height = 600 }: ChartProps) {
     }
   }, [ohlcvData, bollingerSettings]);
 
-  // Initialize chart once and recreate when settings change significantly
+  // Initialize chart and update on settings change
   useEffect(() => {
     if (!chartRef.current || ohlcvData.length === 0) return;
 

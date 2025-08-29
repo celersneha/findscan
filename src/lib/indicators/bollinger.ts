@@ -8,25 +8,18 @@ import {
   validateBollingerBandsInput,
   type BollingerBandsInput,
 } from "./computeBollingerBands";
-
-/**
- * Calculate Bollinger Bands using the modular computeBollingerBands utility
- * @param ohlcvData Array of OHLCV data points
- * @param settings Bollinger Bands configuration
- * @returns Array of Bollinger Bands data points
- */
 export function calculateBollingerBands(
   ohlcvData: OHLCVData[],
   settings: BollingerBandsSettings
 ): BollingerBandsData[] {
   if (ohlcvData.length === 0) return [];
 
-  // Extract source data based on settings
+  // Extract source data
   const sourceValues = ohlcvData.map((candle) =>
     getSourceValue(candle, settings.source)
   );
 
-  // Prepare input for the compute utility
+  // Prepare input
   const input: BollingerBandsInput = {
     values: sourceValues,
     length: settings.length,
@@ -34,7 +27,7 @@ export function calculateBollingerBands(
     offset: settings.offset,
   };
 
-  // Validate input parameters
+  // Validate input
   try {
     validateBollingerBandsInput(input);
   } catch (error) {
@@ -45,12 +38,11 @@ export function calculateBollingerBands(
   // Compute Bollinger Bands
   const bollingerResults = computeBollingerBands(input);
 
-  // Convert to BollingerBandsData format - KEEP ALL DATA POINTS
+  // Convert to BollingerBandsData format
   const result: BollingerBandsData[] = [];
   for (let i = 0; i < ohlcvData.length; i++) {
     const bollingerResult = bollingerResults[i];
 
-    // Create data point for every index, even if values are null
     result.push({
       timestamp: ohlcvData[i].timestamp,
       basis: bollingerResult.basis,
@@ -62,12 +54,6 @@ export function calculateBollingerBands(
   return result;
 }
 
-/**
- * Get the source value from OHLCV data
- * @param candle OHLCV data point
- * @param source Source type
- * @returns Source value
- */
 export function getSourceValue(candle: OHLCVData, source: string): number {
   switch (source) {
     case "open":

@@ -24,13 +24,6 @@ export interface BollingerBandsOutput {
   stdDev: number | null;
 }
 
-/**
- * Calculate Simple Moving Average for a single point
- * @param values Array of source values
- * @param index Current index
- * @param length Period length
- * @returns SMA value or null if insufficient data
- */
 function calculateSMAAtIndex(
   values: number[],
   index: number,
@@ -46,15 +39,6 @@ function calculateSMAAtIndex(
   return sum / length;
 }
 
-/**
- * Calculate Sample Standard Deviation for a single point
- * Using sample standard deviation (N-1) for consistency with most trading platforms
- * @param values Array of source values
- * @param index Current index
- * @param length Period length
- * @param mean Pre-calculated mean (SMA)
- * @returns Standard deviation or null if insufficient data
- */
 function calculateStdDevAtIndex(
   values: number[],
   index: number,
@@ -74,12 +58,6 @@ function calculateStdDevAtIndex(
   return Math.sqrt(variance);
 }
 
-/**
- * Compute Bollinger Bands for a single data point
- * @param input Input parameters
- * @param index Current index in the values array
- * @returns Bollinger Bands values for this point
- */
 export function computeBollingerBandsAtIndex(
   input: BollingerBandsInput,
   index: number
@@ -105,11 +83,6 @@ export function computeBollingerBandsAtIndex(
   return { basis, upper, lower, stdDev };
 }
 
-/**
- * Compute Bollinger Bands for all data points
- * @param input Input parameters
- * @returns Array of Bollinger Bands values
- */
 export function computeBollingerBands(
   input: BollingerBandsInput
 ): BollingerBandsOutput[] {
@@ -130,12 +103,6 @@ export function computeBollingerBands(
   return results;
 }
 
-/**
- * Apply offset to Bollinger Bands results
- * @param results Array of Bollinger Bands results
- * @param offset Number of positions to shift (positive = forward, negative = backward)
- * @returns Shifted array with null values for missing positions
- */
 function applyOffset(
   results: BollingerBandsOutput[],
   offset: number
@@ -161,11 +128,6 @@ function applyOffset(
   return shifted;
 }
 
-/**
- * Validate Bollinger Bands input parameters
- * @param input Input parameters to validate
- * @throws Error if parameters are invalid
- */
 export function validateBollingerBandsInput(input: BollingerBandsInput): void {
   if (!Array.isArray(input.values) || input.values.length === 0) {
     throw new Error("Values array must be non-empty");
