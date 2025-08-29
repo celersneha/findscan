@@ -1,14 +1,13 @@
 /**
- * Compute Bollinger Bands Utility
+ Compute Bollinger Bands Utility
  *
- * This module provides a clean, modular utility for computing Bollinger Bands
- * following the standard financial formula:
- *
- * Basis (middle band) = SMA(source, length)
- * StdDev = standard deviation of the last length values of source (sample standard deviation)
- * Upper = Basis + (StdDev multiplier * StdDev)
- * Lower = Basis - (StdDev multiplier * StdDev)
- * Offset: shift the three series by offset bars on the chart
+ This module provides a clean, modular utility for computing Bollinger Bands
+ 
+ Basis (middle band) = SMA(source, length)
+ StdDev = standard deviation of the last length values of source (sample standard deviation)
+ Upper = Basis + (StdDev multiplier * StdDev)
+ Lower = Basis - (StdDev multiplier * StdDev)
+ Offset: shift the three series by offset bars on the chart
  */
 
 export interface BollingerBandsInput {
