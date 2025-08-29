@@ -2,6 +2,7 @@ import {
   BollingerBandsSettings,
   BollingerBandsData,
   OHLCVData,
+  SourceType,
 } from "../types";
 import {
   computeBollingerBands,
@@ -54,7 +55,7 @@ export function calculateBollingerBands(
   return result;
 }
 
-export function getSourceValue(candle: OHLCVData, source: string): number {
+export function getSourceValue(candle: OHLCVData, source: SourceType): number {
   switch (source) {
     case "open":
       return candle.open;
