@@ -8,6 +8,7 @@ import {
   registerIndicator,
   LineType,
 } from "klinecharts";
+import { Button } from "@/components/ui/button";
 import {
   BollingerBandsSettings,
   BollingerBandsData,
@@ -240,12 +241,7 @@ export default function Chart({ width = 800, height = 600 }: ChartProps) {
       >
         <div className="text-center">
           <p className="text-red-600 dark:text-red-400 mb-4">Error: {error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            Retry
-          </button>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
         </div>
       </div>
     );
@@ -275,13 +271,9 @@ export default function Chart({ width = 800, height = 600 }: ChartProps) {
           </div>
         </div>
 
-        <button
-          onClick={() => setShowSettings(true)}
-          className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 
-                     focus:ring-2 focus:ring-blue-500 focus:outline-none"
-        >
+        <Button onClick={() => setShowSettings(true)} size="sm">
           Settings
-        </button>
+        </Button>
       </div>
 
       {/* Legend */}
