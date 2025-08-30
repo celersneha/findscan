@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer";
 import Chart from "../components/Chart";
 
 export default function Home() {
@@ -20,9 +21,7 @@ export default function Home() {
         </div>
 
         {/* Footer */}
-        <footer className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-          <p>Built with Next.js, TypeScript, and KLineCharts</p>
-        </footer>
+        <Footer />
       </div>
     </div>
   );
