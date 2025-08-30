@@ -31,18 +31,26 @@ A Next.js application implementing Bollinger Bands technical indicators with a T
 ## Project Structure
 
 ```
+public/
+└── screenshots/
+    ├── Chart.png
+    ├── Setting1.png
+    └── Setting2.png
+
 src/
 ├── app/
 │   ├── page.tsx                 # Main page with chart display
-│   ├── layout.tsx              # App layout
-│   └── globals.css             # Global styles
+│   ├── layout.tsx               # App layout
+│   └── globals.css              # Global styles
 ├── components/
-│   ├── Chart.tsx               # Main chart component with KLineChart
-│   └── BollingerSettings.tsx   # TradingView-style settings modal
+│   ├── Chart.tsx                # Main chart component with KLineChart
+│   └── BollingerSettings.tsx    # TradingView-style settings modal
 └── lib/
-    ├── types.ts                # TypeScript type definitions
+    ├── types.ts                 # TypeScript type definitions
+    ├── utils.ts
     └── indicators/
-        └── bollinger.ts        # Bollinger Bands calculation logic
+        └── bollinger.ts         # Bollinger Bands calculation logic
+        └── computeBollingerBands.ts
 ```
 
 ## Calculation Formulas
@@ -81,64 +89,61 @@ The application expects OHLCV data in the following format:
    npm install
    ```
 
-2. **Generate OHLCV data** (if needed):
-
-   ```bash
-   node scripts/convertBinance.js
-   ```
-
-3. **Start development server**:
+2. **Start development server**:
 
    ```bash
    npm run dev
    ```
 
-4. **Open browser**:
+3. **Open browser**:
    Navigate to [http://localhost:3000](http://localhost:3000)
 
 ## Usage
 
 1. **View Chart**: The main page displays a candlestick chart with Bollinger Bands
+
+   ![Chart Screenshot](public\screenshots\Chart.png)
+
 2. **Open Settings**: Click the "Settings" button to configure Bollinger Bands
+
 3. **Configure Inputs**:
+
    - Set Length (1-200)
    - Choose MA Type (SMA)
    - Select Source (Close/Open/High/Low)
    - Set StdDev Multiplier (0.1-5.0)
    - Set Offset (-50 to +50)
+
+   ![Settings Inputs Screenshot](public\screenshots\Setting1.png)
+
 4. **Configure Style**:
+
    - Toggle visibility for each band
    - Choose colors for each band
    - Set line width (1-5px)
    - Choose line style (solid/dashed)
    - Configure background fill opacity
+
+   ![Settings Modal Screenshot](public\screenshots\Setting2.png)
+
 5. **Apply Changes**: Settings update in real-time
 
 ## Key Features Implemented
 
 ### ✅ Requirements Compliance
 
-- [x] Length: 20 (configurable)
-- [x] Basic MA Type: SMA (with field exposed)
-- [x] Source: Close (configurable)
-- [x] StdDev Multiplier: 2 (configurable)
-- [x] Offset: 0 (configurable)
+- Length: 20 (configurable)
+- Basic MA Type: SMA (with field exposed)
+- Source: Close (configurable)
+- StdDev Multiplier: 2 (configurable)
+- Offset: 0 (configurable)
 
 ### ✅ Style Configuration
 
-- [x] Basic band: visibility + color + line width + line style
-- [x] Upper band: visibility + color + line width + line style
-- [x] Lower band: visibility + color + line width + line style
-- [x] Background fill: visibility + opacity
-
-### ✅ Technical Excellence
-
-- [x] Instant recalculation on input changes
-- [x] Sample standard deviation calculation
-- [x] Offset implementation (shift by N bars)
-- [x] TypeScript implementation
-- [x] Responsive design with Tailwind CSS
-- [x] Error handling and loading states
+- Basic band: visibility + color + line width + line style
+- Upper band: visibility + color + line width + line style
+- Lower band: visibility + color + line width + line style
+- Background fill: visibility + opacity
 
 ## Technology Stack
 
@@ -147,36 +152,3 @@ The application expects OHLCV data in the following format:
 - **Styling**: Tailwind CSS 4
 - **State Management**: React hooks (useState, useEffect)
 - **Data Processing**: Custom Bollinger Bands calculations
-
-## Performance
-
-The application efficiently handles large datasets:
-
-- **Data Points**: 1,600+ OHLCV points
-- **Bollinger Points**: 1,580+ calculated points (after initial period)
-- **Real-time Updates**: Instant recalculation on setting changes
-- **Memory Efficient**: Optimized calculation algorithms
-
-## Testing
-
-The implementation includes:
-
-- Real-time calculation verification
-- Data table display for manual verification
-- Console logging for debugging
-- Error handling for data loading issues
-
-## Future Enhancements
-
-Potential improvements:
-
-- Additional MA types (EMA, WMA, etc.)
-- More technical indicators
-- Enhanced chart visualization with overlay rendering
-- Export functionality
-- Historical data comparison
-- Mobile optimization
-
-## License
-
-This project is for educational and demonstration purposes.
