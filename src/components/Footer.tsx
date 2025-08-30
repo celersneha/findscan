@@ -88,7 +88,7 @@ const Footer = () => {
             rel="noopener noreferrer"
             className="hover:underline"
           >
-            © {currentYear} Sneha Sharma. All rights reserved.
+            © {currentYear} FindScan. All rights reserved.
           </a>
         </div>
       </div>
