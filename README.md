@@ -102,7 +102,8 @@ The application expects OHLCV data in the following format:
 
 1. **View Chart**: The main page displays a candlestick chart with Bollinger Bands
 
-   ![Chart Screenshot](/public/screenshots/Chart.png)
+   <img src="public/screenshots/Chart.png" alt="Chart Screenshot" width="400"/>
+
 
 2. **Open Settings**: Click the "Settings" button to configure Bollinger Bands
 
@@ -114,7 +115,7 @@ The application expects OHLCV data in the following format:
    - Set StdDev Multiplier (0.1-5.0)
    - Set Offset (-50 to +50)
 
-   ![Settings Inputs Screenshot](/public/screenshots/Setting1.png)
+   <img src="/public/screenshots/Setting1.png" alt="Settings Inputs Screenshot" width="400" height="400"/>
 
 4. **Configure Style**:
 
@@ -124,7 +125,7 @@ The application expects OHLCV data in the following format:
    - Choose line style (solid/dashed)
    - Configure background fill opacity
 
-   ![Settings Modal Screenshot](/public/screenshots/Setting2.png)
+<img src="/public/screenshots/Setting2.png" alt="Settings Modal Screenshot" width="400" height="400"/>
 
 5. **Apply Changes**: Settings update in real-time
 
